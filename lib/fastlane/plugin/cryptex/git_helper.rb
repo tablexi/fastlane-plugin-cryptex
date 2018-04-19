@@ -12,8 +12,8 @@ module Fastlane
         UI.message "Cloning remote git repo..."
         begin
           FastlaneCore::CommandExecutor.execute(command: command,
-                                              print_all: $verbose,
-                                          print_command: $verbose)
+                                              print_all: true,
+                                          print_command: true)
         rescue
           UI.error("Error cloning Repo")
           UI.error("Run the following command manually to make sure you're properly authenticated:")
