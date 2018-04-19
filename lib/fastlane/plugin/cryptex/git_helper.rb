@@ -11,7 +11,7 @@ module Fastlane
 
         UI.message "Cloning remote git repo..."
         begin
-          FastlaneCore::CommandExecutor.execute(command: "GIT_TERMINAL_PROMPT=0 #{command}",
+          FastlaneCore::CommandExecutor.execute(command: command,
                                               print_all: $verbose,
                                           print_command: $verbose)
         rescue
