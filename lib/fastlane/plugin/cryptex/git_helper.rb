@@ -11,9 +11,12 @@ module Fastlane
 
         UI.message "Cloning remote git repo..."
         begin
-          FastlaneCore::CommandExecutor.execute(command: "GIT_TERMINAL_PROMPT=0 #{command}",
+          puts "running: #{command}"
+          puts "#{FastlaneCore}"
+          puts FastlaneCore::CommandExecutor.execute(command: "GIT_TERMINAL_PROMPT=0 #{command}",
                                               print_all: $verbose,
                                           print_command: $verbose)
+          puts "finished"
         rescue StandardError
           UI.error("Error cloning Repo")
           UI.error("Run the following command manually to make sure you're properly authenticated:")
@@ -22,12 +25,15 @@ module Fastlane
         end
 
         UI.user_error!("Error cloning repo, make sure you have access to it '#{git_url}'") unless File.directory?(@dir)
-
+        
+        puts "checking out branch: #{branch}"
         checkout_branch(branch) unless branch == "master"
 
+        puts "copy readme"
         copy_readme(@dir) unless skip_docs
-        Cryptex::Encrypt.new.decrypt_repo(path: @dir, git_url: git_url, manual_password: manual_password, digest: digest)
-
+        puts "decrypting digest: #{digest}"
+        puts Cryptex::Encrypt.new.decrypt_repo(path: @dir, git_url: git_url, manual_password: manual_password, digest: digest)
+        puts "returning #{@dir}"
         return @dir
       end
 
