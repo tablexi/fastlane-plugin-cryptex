@@ -136,7 +136,7 @@ module Fastlane
 
       def self.execute_command(cmd)
         puts cmd.cyan
-        return `cmd`
+        return `#{cmd}`
       end
 
       # Copies the README.md into the git repo
