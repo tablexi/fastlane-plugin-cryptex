@@ -126,7 +126,12 @@ module Fastlane
         result = Dir.chdir(@dir) do
           puts "-- changed dir: #{@dir}"
           puts "running: git branch --list origin/#{branch.shellescape} --no-color -r"
-          system "git branch --list origin/#{branch.shellescape} --no-color -r"
+          remote = system "git branch --list -r"
+          local = system "git branch --list"
+          puts "remote: #{remote}"
+          puts "local: #{local}"
+          res = system "git branch --list origin/#{branch.shellescape} --no-color -r"
+          puts "response: #{res}"
           exec_result = FastlaneCore::CommandExecutor.execute(command: "git branch --list origin/#{branch.shellescape} --no-color -r",
                                                 print_all: $verbose,
                                                 print_command: $verbose)
