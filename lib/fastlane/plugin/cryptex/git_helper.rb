@@ -13,9 +13,7 @@ module Fastlane
         begin
           puts "running: #{command}"
           puts "#{FastlaneCore}"
-          puts FastlaneCore::CommandExecutor.execute(command: "GIT_TERMINAL_PROMPT=0 #{command}",
-                                              print_all: $verbose,
-                                          print_command: $verbose)
+          execute_command("GIT_TERMINAL_PROMPT=0 #{command}")
           puts "finished"
         rescue StandardError
           UI.error("Error cloning Repo")
@@ -67,9 +65,7 @@ module Fastlane
           UI.message "Pushing changes to remote git repo..."
 
           commands.each do |command|
-            FastlaneCore::CommandExecutor.execute(command: command,
-                                                print_all: $verbose,
-                                            print_command: $verbose)
+            execute_command(command)
           end
         end
         FileUtils.rm_rf(path)
@@ -112,9 +108,7 @@ module Fastlane
           puts "changed directory"
           commands.each do |command|
             puts "executing #{command}"
-            FastlaneCore::CommandExecutor.execute(command: command,
-                                                  print_all: $verbose,
-                                                  print_command: $verbose)
+            execute_command(command)
           end
         end
       end
@@ -132,14 +126,17 @@ module Fastlane
           puts "local: #{local}"
           res = system "git branch --list origin/#{branch.shellescape} --no-color -r"
           puts "response: #{res}"
-          exec_result = FastlaneCore::CommandExecutor.execute(command: "git branch --list origin/#{branch.shellescape} --no-color -r",
-                                                print_all: $verbose,
-                                                print_command: $verbose)
+          exec_result = execute_command("git branch --list origin/#{branch.shellescape} --no-color -r")
           puts "exec result: #{exec_result}"
           return exec_result
         end
         puts "result of branch exists: #{result}"
         return !result.empty?
+      end
+
+      def self.execute_command(cmd)
+        puts cmd.cyan
+        return `cmd`
       end
 
       # Copies the README.md into the git repo
