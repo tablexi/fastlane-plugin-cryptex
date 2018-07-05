@@ -89,23 +89,29 @@ module Fastlane
 
       # Create and checkout an specific branch in the git repo
       def self.checkout_branch(branch)
+        puts "checkout"
         return unless @dir
-
+        
         commands = []
         if branch_exists?(branch)
+          puts "branch exists"
           # Checkout the branch if it already exists
           commands << "git checkout #{branch.shellescape}"
         else
+          puts "branch doesn't exist"
           # If a new branch is being created, we create it as an 'orphan' to not inherit changes from the master branch.
           commands << "git checkout --orphan #{branch.shellescape}"
           # We also need to reset the working directory to not transfer any uncommitted changes to the new branch.
           commands << "git reset --hard"
         end
+        puts commands
 
         UI.message "Checking out branch #{branch}..."
 
         Dir.chdir(@dir) do
+          puts "changed directory"
           commands.each do |command|
+            puts "executing #{command}"
             FastlaneCore::CommandExecutor.execute(command: command,
                                                   print_all: $verbose,
                                                   print_command: $verbose)
@@ -116,7 +122,7 @@ module Fastlane
       # Checks if a specific branch exists in the git repo
       def self.branch_exists?(branch)
         return unless @dir
-
+        puts "checking branch exists"
         result = Dir.chdir(@dir) do
           FastlaneCore::CommandExecutor.execute(command: "git branch --list origin/#{branch.shellescape} --no-color -r",
                                                 print_all: $verbose,
