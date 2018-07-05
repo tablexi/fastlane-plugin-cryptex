@@ -11,10 +11,7 @@ module Fastlane
 
         UI.message "Cloning remote git repo..."
         begin
-          puts "running: #{command}"
-          puts "#{FastlaneCore}"
           execute_command("GIT_TERMINAL_PROMPT=0 #{command}")
-          puts "finished"
         rescue StandardError
           UI.error("Error cloning Repo")
           UI.error("Run the following command manually to make sure you're properly authenticated:")
@@ -23,15 +20,10 @@ module Fastlane
         end
 
         UI.user_error!("Error cloning repo, make sure you have access to it '#{git_url}'") unless File.directory?(@dir)
-        
-        puts "checking out branch: #{branch}"
-        checkout_branch(branch) unless branch == "master"
 
-        puts "copy readme"
+        checkout_branch(branch) unless branch == "master"
         copy_readme(@dir) unless skip_docs
-        puts "decrypting digest: #{digest}"
         puts Cryptex::Encrypt.new.decrypt_repo(path: @dir, git_url: git_url, manual_password: manual_password, digest: digest)
-        puts "returning #{@dir}"
         return @dir
       end
 
@@ -85,12 +77,10 @@ module Fastlane
 
       # Create and checkout an specific branch in the git repo
       def self.checkout_branch(branch)
-        puts "checkout"
         return unless @dir
         
         commands = []
         if branch_exists?(branch)
-          puts "branch exists"
           # Checkout the branch if it already exists
           commands << "git checkout #{branch.shellescape}"
         else
@@ -116,21 +106,9 @@ module Fastlane
       # Checks if a specific branch exists in the git repo
       def self.branch_exists?(branch)
         return unless @dir
-        puts "checking branch exists"
         result = Dir.chdir(@dir) do
-          puts "-- changed dir: #{@dir}"
-          puts "running: git branch --list origin/#{branch.shellescape} --no-color -r"
-          remote = system "git branch --list -r"
-          puts "remote: #{remote}"
-          local = system "git branch --list"
-          puts "local: #{local}"
-          res = system "git branch --list origin/#{branch.shellescape} --no-color -r"
-          puts "response: #{res}"
-          exec_result = execute_command("git branch --list origin/#{branch.shellescape} --no-color -r")
-          puts "exec result: #{exec_result}"
-          return exec_result
+          execute_command("git branch --list origin/#{branch.shellescape} --no-color -r")
         end
-        puts "result of branch exists: #{result}"
         return !result.empty?
       end
 
