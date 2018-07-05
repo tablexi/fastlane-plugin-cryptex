@@ -11,9 +11,7 @@ module Fastlane
 
         UI.message "Cloning remote git repo..."
         begin
-          FastlaneCore::CommandExecutor.execute(command: command,
-                                              print_all: true,
-                                          print_command: true)
+          execute_command("GIT_TERMINAL_PROMPT=0 #{command}")
         rescue
           UI.error("Error cloning Repo")
           UI.error("Run the following command manually to make sure you're properly authenticated:")
@@ -61,9 +59,7 @@ module Fastlane
           UI.message "Pushing changes to remote git repo..."
 
           commands.each do |command|
-            FastlaneCore::CommandExecutor.execute(command: command,
-                                                print_all: $verbose,
-                                            print_command: $verbose)
+            execute_command(command)
           end
         end
         FileUtils.rm_rf(path)
@@ -84,7 +80,7 @@ module Fastlane
       # Create and checkout an specific branch in the git repo
       def self.checkout_branch(branch)
         return unless @dir
-
+        
         commands = []
         if branch_exists?(branch)
           # Checkout the branch if it already exists
@@ -100,9 +96,7 @@ module Fastlane
 
         Dir.chdir(@dir) do
           commands.each do |command|
-            FastlaneCore::CommandExecutor.execute(command: command,
-                                                  print_all: $verbose,
-                                                  print_command: $verbose)
+            execute_command(command)
           end
         end
       end
@@ -110,13 +104,16 @@ module Fastlane
       # Checks if a specific branch exists in the git repo
       def self.branch_exists?(branch)
         return unless @dir
-
+        
         result = Dir.chdir(@dir) do
-          FastlaneCore::CommandExecutor.execute(command: "git branch --list origin/#{branch.shellescape} --no-color -r",
-                                                print_all: $verbose,
-                                                print_command: $verbose)
+          execute_command("git branch --list origin/#{branch.shellescape} --no-color -r")
         end
         return !result.empty?
+      end
+
+      def self.execute_command(cmd)
+        puts cmd.cyan
+        return `#{cmd}`
       end
 
       # Copies the README.md into the git repo
