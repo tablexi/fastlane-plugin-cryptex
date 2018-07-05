@@ -124,10 +124,15 @@ module Fastlane
         return unless @dir
         puts "checking branch exists"
         result = Dir.chdir(@dir) do
-          FastlaneCore::CommandExecutor.execute(command: "git branch --list origin/#{branch.shellescape} --no-color -r",
+          puts "-- changed dir: #{@dir}"
+          puts "running: git branch --list origin/#{branch.shellescape} --no-color -r"
+          exec_result = FastlaneCore::CommandExecutor.execute(command: "git branch --list origin/#{branch.shellescape} --no-color -r",
                                                 print_all: $verbose,
                                                 print_command: $verbose)
+          puts "exec result: #{exec_result}"
+          return exec_result
         end
+        puts "result of branch exists: #{result}"
         return !result.empty?
       end
 
